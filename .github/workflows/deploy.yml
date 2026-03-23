@@ -6,6 +6,12 @@ on:
       - main    # 当推送到 main 分支时触发部署
   workflow_dispatch:   # 允许在 GitHub 网站手动触发
 
+# 关键：配置 GITHUB_TOKEN 的权限
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -36,3 +42,4 @@ jobs:
           commit_message: "自动部署: ${{ github.event.head_commit.message }}"
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
+          force_orphan: true  # 强制创建孤儿分支，避免历史记录问题
