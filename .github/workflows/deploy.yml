@@ -1,0 +1,38 @@
+name: Hexo 自动部署
+
+on:
+  push:
+    branches:
+      - main    # 当推送到 main 分支时触发部署
+  workflow_dispatch:   # 允许在 GitHub 网站手动触发
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 安装依赖
+        run: npm install
+
+      - name: 构建静态文件
+        run: npx hexo generate
+
+      - name: 部署到 GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages
+          commit_message: "自动部署: ${{ github.event.head_commit.message }}"
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
